@@ -2,6 +2,7 @@ package com.rest.webservices.Restful_WebService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 //Restful Web Services
 //Social Media Application
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
+
 public class RestfulWebServiceApplication {
 
     public static void main(String[] args) {
