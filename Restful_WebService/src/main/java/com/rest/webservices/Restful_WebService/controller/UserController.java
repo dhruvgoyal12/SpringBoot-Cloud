@@ -4,6 +4,8 @@ import com.rest.webservices.Restful_WebService.Bean.User;
 import com.rest.webservices.Restful_WebService.Exceptions.UserNotFoundException;
 import com.rest.webservices.Restful_WebService.dao.UserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 public class UserController {
@@ -20,6 +23,8 @@ public class UserController {
     @Autowired
     private UserDaoService userDaoService;
 
+    @Autowired
+    private MessageSource messageSource;
     // retrieveAllUsers
     @GetMapping(path = "users")
     public List<User> getAllUsers() {
@@ -60,6 +65,14 @@ public class UserController {
         if (user == null) throw new UserNotFoundException("id-" + id);
 
         return user;
+    }
+
+    @GetMapping(path = "/users-int")
+//    public String userInt(@RequestHeader(name = "Accept-Language", required = false) Locale locale){
+//        return messageSource.getMessage("good.morning.message", null, locale);
+//    }
+    public String userInt(){
+        return messageSource.getMessage("good.morning.message", null, LocaleContextHolder.getLocale());
     }
 
 }
