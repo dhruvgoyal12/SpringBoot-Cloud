@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserDaoService userDaoService = new UserDaoService();
+    private UserDaoService userDaoService;
 
     // retrieveAllUsers
     @GetMapping(path = "users")
@@ -26,15 +27,15 @@ public class UserController {
     //retrieveUser
     @GetMapping(path = "users/{id}")
     public User getUser(@PathVariable int id) {
-        User user =  userDaoService.findOne(id);
-        if (user == null){
+        User user = userDaoService.findOne(id);
+        if (user == null) {
             throw new UserNotFoundException("id-" + id);
         }
         return user;
     }
 
     @PostMapping(path = "users")
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         User savedUser = userDaoService.save(user);
         // Getting the uri for the created user
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser
@@ -42,4 +43,13 @@ public class UserController {
 
         return ResponseEntity.created(location).build();
     }
+
+    @DeleteMapping(path = "users/{id}")
+    public User deleteUser(@PathVariable int id) {
+        User user = userDaoService.deleteById(id);
+        if (user == null) throw new UserNotFoundException("id-" + id);
+
+        return user;
+    }
+
 }
