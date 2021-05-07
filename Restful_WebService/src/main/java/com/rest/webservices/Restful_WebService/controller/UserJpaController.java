@@ -1,5 +1,6 @@
 package com.rest.webservices.Restful_WebService.controller;
 
+import com.rest.webservices.Restful_WebService.Bean.Post;
 import com.rest.webservices.Restful_WebService.Bean.User;
 import com.rest.webservices.Restful_WebService.Exceptions.UserNotFoundException;
 import com.rest.webservices.Restful_WebService.Repository.UserRepo;
@@ -55,7 +56,7 @@ public class UserJpaController {
 
     @PostMapping(path = "jpa/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = userDaoService.save(user);
+        User savedUser = userRepo.save(user);
         // Getting the uri for the created user
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser
                 .getId()).toUri();
@@ -64,11 +65,11 @@ public class UserJpaController {
     }
 
     @DeleteMapping(path = "jpa/users/{id}")
-    public User deleteUser(@PathVariable int id) {
-        User user = userDaoService.deleteById(id);
-        if (user == null) throw new UserNotFoundException("id-" + id);
-
-        return user;
+    public void deleteUser(@PathVariable int id) {
+       userRepo.deleteById(id);
+//        if (user == null) throw new UserNotFoundException("id-" + id);
+//
+//        return user;
     }
 
     @GetMapping(path = "jpa/users-int")
@@ -77,6 +78,16 @@ public class UserJpaController {
 //    }
     public String userInt(){
         return messageSource.getMessage("good.morning.message", null, LocaleContextHolder.getLocale());
+    }
+
+
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrieveAllUsersPost(@PathVariable int id){
+        Optional<User> user = userRepo.findById(id);
+
+        if (!user.isPresent()) throw new UserNotFoundException("id-"+ id);
+
+        return user.get().getPosts();
     }
 
 }
