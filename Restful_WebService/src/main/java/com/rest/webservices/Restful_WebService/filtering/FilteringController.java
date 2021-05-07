@@ -1,5 +1,9 @@
 package com.rest.webservices.Restful_WebService.filtering;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,11 +14,28 @@ import java.util.List;
 public class FilteringController {
 
     @GetMapping("/filtering")
-    public SomeBean retrieveSomeBean(){
-        return new SomeBean("value1", "value2", "value3");
+    public MappingJacksonValue retrieveSomeBean(){
+        SomeBean someBean = new SomeBean("value1", "value2", "value3");
+        // only want to send field1 and field2
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("field1", "field2");
+        FilterProvider filters = new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);
+        MappingJacksonValue mapping = new MappingJacksonValue(someBean);
+        mapping.setFilters(filters);
+        return mapping;
     }
+    
     @GetMapping("/filtering/all")
-    public List<SomeBean> retrieveListSomeBean(){
-        return Arrays.asList(new SomeBean("value1", "value2", "value3"),new SomeBean("value1", "value2", "value3"));
+    public MappingJacksonValue retrieveListSomeBean(){
+        List<SomeBean> someBeans = Arrays.asList(new SomeBean("value1", "value2", "value3"), new SomeBean("value1", "value2", "value3"));
+
+
+
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("field2", "field3");
+        FilterProvider filters = new SimpleFilterProvider().addFilter("SomeBeanFilter", filter);
+        MappingJacksonValue mapping = new MappingJacksonValue(someBeans);
+        mapping.setFilters(filters);
+
+        return mapping;
     }
 }
