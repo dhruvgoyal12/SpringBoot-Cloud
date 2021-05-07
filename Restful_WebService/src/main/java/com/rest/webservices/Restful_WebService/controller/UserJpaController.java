@@ -3,6 +3,7 @@ package com.rest.webservices.Restful_WebService.controller;
 import com.rest.webservices.Restful_WebService.Bean.Post;
 import com.rest.webservices.Restful_WebService.Bean.User;
 import com.rest.webservices.Restful_WebService.Exceptions.UserNotFoundException;
+import com.rest.webservices.Restful_WebService.Repository.PostRepo;
 import com.rest.webservices.Restful_WebService.Repository.UserRepo;
 import com.rest.webservices.Restful_WebService.dao.UserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class UserJpaController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private PostRepo postRepo;
 
     @Autowired
     private MessageSource messageSource;
@@ -88,6 +92,24 @@ public class UserJpaController {
         if (!user.isPresent()) throw new UserNotFoundException("id-"+ id);
 
         return user.get().getPosts();
+    }
+
+
+    @PostMapping(path = "jpa/users/{id}/posts")
+    public ResponseEntity<Object> createUser(@PathVariable int id, @RequestBody Post post) {
+
+        Optional<User> userOptional = userRepo.findById(id);
+
+        if (!userOptional.isPresent()) throw new UserNotFoundException("id-"+ id);
+
+        User user = userOptional.get();
+        post.setUser(user);
+        postRepo.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post
+                .getId()).toUri();
+
+       return ResponseEntity.created(location).build();
     }
 
 }
